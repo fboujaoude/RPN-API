@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RPN</name>
+    </assembly>
+    <members>
+        <member name="M:RPN.Controllers.RpnController.GetOp">
+            <summary>
+            List all the Operands
+            </summary>
+            <returns>List of operands</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.GetAvailableStacks">
+            <summary>
+            List the available stacks
+            </summary>
+            <returns>List of available stack</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.GetStack(System.Int32)">
+            <summary>
+            Get a stack
+            </summary>
+            <param name="stack_id">stack id</param>
+            <returns>returns the found stack or null if not found</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.PostStack">
+            <summary>
+            Create a new stack
+            </summary>
+            <returns>Ok if successfully added and Bad Request if not</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.PostAddToStack(System.Int32,System.Double)">
+            <summary>
+            Push a new value to a stack
+            </summary>
+            <param name="stack_id">stack id to push into</param>
+            <param name="val">the value to be pushed</param>
+            <returns>Ok if successful and bad request with message if not</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.DeleteStack(System.Int32)">
+            <summary>
+            Delete a stack
+            </summary>
+            <param name="stack_id">stack id to be deleted</param>
+            <returns>Ok if successful and bad request with message if not</returns>
+        </member>
+        <member name="M:RPN.Controllers.RpnController.PostApplyOperand(System.String,System.Int32)">
+            <summary>
+            Apply an operand to a stack
+            </summary>
+            <param name="op">operand to be applied</param>
+            <param name="stack_id">stack id where to apply the operand</param>
+            <returns>Ok if successful and bad request with message if not</returns>
+        </member>
+        <member name="T:RPN.Data.DB">
+            <summary>
+            Created instead of a sql db just to gain time 
+            </summary>
+        </member>
+    </members>
+</doc>
