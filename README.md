@@ -1,15 +1,11 @@
 # RPN-Api
+J'ai fait le test en 2 heures hier et l'avais poussé vers la branche "main".
 
-I did the test in 2 hours yesterday and had pushed it to the "main" branch.
+# (Effort Personnel)
+J'hésitais à faire cette étape, car j'avais peur que vous pensiez que j'essaie de tricher, mais laissez-moi vous dire de quoi il s'agit. J'ai ajouté aujourd'hui ce fichier readme et je veux expliquer ce qui suit :
 
+Le test peut être traité de différentes manières, et il y avait des conflits dans la dénomination "Operand" et "Operator" dans le contexte donné, et cela m'a pris un peu plus de temps pour décider la meilleure approche pour la solution.
 
-# (Personal effort) 
-I was hesitating to do this step, as i was affraid you think i am trying to cheat , but please let me tell you what is it about.
-I added today this readme file and want to explain the below:
+Ainsi, dans les 30 minutes qui ont suivi la fin du test, j'ai ajouté dependencyInjection pour le repository, modifié certaines classes et corrigé certaines méthodes, et afin de ne pas modifier la branche "main" et d'apparaître comme de la triche, j'ai créé une nouvelle branche et ajouté les modifications la dessus. 
 
-The test can be treated in different ways, and there was conflicts in naming "operand" and "operators" in the given context,and that took some extra time from me 
-to decide the better approach for the solution.
-
-So in the Next 30 mins after finishing the test,  i added dependencyInjection for the repository and changed some classes and fixed some methods,and in order not to change 
-the "main" branch and appear as cheating i created a new branch and added the changes to it .
-(Again this is personal effort that you can ignore but i appreciate if you can take a look at it just for having your opinion as professionals)
+(Encore une fois, c'est un effort personnel que vous pouvez ignorer , mais j'apprécie si vous pouvez jeter un coup d'œil juste pour avoir votre opinion en tant que professionnels)
