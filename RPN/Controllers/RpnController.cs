@@ -16,11 +16,12 @@ namespace RPN.Controllers
     public class RpnController : ControllerBase
     {
 
+        private readonly IRepository repository;
         List<string> Operands = new List<string>() { "+", "-", "*", "/" };
 
-        public RpnController()
+        public RpnController(IRepository repository)
         {
-
+            this.repository = repository;
             ////added for testing purposes
 
             //DB.StackDB = new Stack<StackModel>();
@@ -56,9 +57,7 @@ namespace RPN.Controllers
         [Route("stack")]
         public IActionResult GetAvailableStacks()
         {
-            if (DB.StackDB == null)
-                return NotFound();
-            return new JsonResult(DB.StackDB);
+            return new JsonResult(repository.GetStacks());
         }
 
         /// <summary>
@@ -70,11 +69,11 @@ namespace RPN.Controllers
         [Route("stack/{stack_id}")]
         public IActionResult GetStack(int stack_id)
         {
-            StackModel stack = DB.StackDB.Where(s => s.id == stack_id).FirstOrDefault();
-            if (stack  == null)
+            StackModel stack = repository.GetStackById(stack_id);
+            if (stack == null)
                 return NotFound();
             else
-                return new JsonResult(stack);// ElementAt(stack_id));
+                return new JsonResult(stack);
         }
 
         /// <summary>
@@ -87,12 +86,8 @@ namespace RPN.Controllers
         {
             try
             {
-                if(DB.StackDB == null)
-                    DB.StackDB = new Stack<StackModel>();
-                Stack<double> stack = new Stack<double>();
-                DB.StackDB.Push(new StackModel() { id = DB.StackDB.Count + 1, stack = stack });
-
-                return Ok(DB.StackDB.Peek());
+                repository.CreateStack();
+                return Ok(repository.GetStacks().Peek());
             }
             catch (Exception ex)
             {
@@ -107,17 +102,14 @@ namespace RPN.Controllers
         /// <param name="val">the value to be pushed</param>
         /// <returns>Ok if successful and bad request with message if not</returns>
         [HttpPost]
-        [Route("stack/{stack_id}/{val}")]
-        public IActionResult PostAddToStack(int stack_id,double val)
+        [Route("stack/{stack_id}")]
+        public IActionResult PostAddToStack(int stack_id, [FromBody]string val)
         {
-            StackModel st = DB.StackDB.Where(s => s.id == stack_id).FirstOrDefault();
-            if (st != null)
-            {
-                st.stack.Push(val);
-                return Ok(st);
-            }
-            else
-                return BadRequest("Failed to add to the specified stack");
+            if (!(Helper.IsDouble(val)))
+                return BadRequest("Value should be a double or a valid operation");
+
+            StackModel stack = repository.AddStackValue(stack_id, val);
+            return Ok(stack);
         }
 
 
@@ -130,15 +122,13 @@ namespace RPN.Controllers
         [Route("stack/{stack_id}")]
         public IActionResult DeleteStack(int stack_id)
         {
-
-            StackModel st = DB.StackDB.Where(s => s.id == stack_id).FirstOrDefault();
-            if (st != null)
-            {
-                DB.StackDB.Remove(st);
-                return Ok(st);
-            }
+            StackModel stack = repository.RemoveStack(stack_id);
+            if (stack == null)
+                return NotFound();
             else
-                return BadRequest("Failed to remove to the specified stack");
+            {
+                return Ok(stack);
+            }
         }
 
         /// <summary>
@@ -156,52 +146,62 @@ namespace RPN.Controllers
             // a specific stach in the list of stacksa dn will apply this operand
             // to the last 2 consecutive values as rpn algorithm indicates
 
-            double result = 0;
-            StackModel st = DB.StackDB.Where(s => s.id == stack_id).FirstOrDefault();
+            StackModel st = repository.GetStackById(stack_id);
             if (st == null)
                 return BadRequest("Wrong stack id");
 
             if (!Helper.IsOperator(op))
                 return BadRequest("Wrong operator");
 
-            if (DB.StackDB.Count == 0)
-                return Ok(0);
-            else
-            {
-                switch (op)
-                {
-                    case "+":
-                        result = Convert.ToDouble(st.stack.Pop());
-                        double popedAdd = 0;
-                        st.stack.Push((st.stack.TryPop(out popedAdd) ? popedAdd : 0) + result);
-                        break;
-                    case "*":
-                        result = Convert.ToDouble(st.stack.Pop());
-                        double popedTimes = 0;
-                        st.stack.Push((st.stack.TryPop(out popedTimes) ? popedTimes : 0) * result);
-                        break;
-                    case "/":
-                        result = Convert.ToDouble(st.stack.Pop());
-                        double popedDivided = 0;
-                        st.stack.Push((st.stack.TryPop(out popedDivided) ? popedDivided : 0) / result);
-                        break;
-                    case "-":
-                        result = Convert.ToDouble(st.stack.Pop());
-                        double popedMinus = 0;
-                        st.stack.Push((st.stack.TryPop(out popedMinus) ? popedMinus : 0) - result);
-                        break;
-                    default:
-                        break;
-                }
-                return Ok(DB.StackDB);
-            }
+            repository.ApplyOperandToStack(op, st);
+            return Ok(repository.GetStacks());
+
+            //double result = 0;
+            //StackModel st = DB.StackDB.Where(s => s.id == stack_id).FirstOrDefault();
+            //if (st == null)
+            //    return BadRequest("Wrong stack id");
+
+            //if (!Helper.IsOperator(op))
+            //    return BadRequest("Wrong operator");
+
+            //if (DB.StackDB.Count == 0)
+            //    return Ok(0);
+            //else
+            //{
+            //    switch (op)
+            //    {
+            //        case "+":
+            //            result = Convert.ToDouble(st.stack.Pop());
+            //            double popedAdd = 0;
+            //            st.stack.Push((st.stack.TryPop(out popedAdd) ? popedAdd : 0) + result);
+            //            break;
+            //        case "*":
+            //            result = Convert.ToDouble(st.stack.Pop());
+            //            double popedTimes = 0;
+            //            st.stack.Push((st.stack.TryPop(out popedTimes) ? popedTimes : 0) * result);
+            //            break;
+            //        case "/":
+            //            result = Convert.ToDouble(st.stack.Pop());
+            //            double popedDivided = 0;
+            //            st.stack.Push((st.stack.TryPop(out popedDivided) ? popedDivided : 0) / result);
+            //            break;
+            //        case "-":
+            //            result = Convert.ToDouble(st.stack.Pop());
+            //            double popedMinus = 0;
+            //            st.stack.Push((st.stack.TryPop(out popedMinus) ? popedMinus : 0) - result);
+            //            break;
+            //        default:
+            //            break;
+            //    }
+            //    return Ok(DB.StackDB);
+            //}
 
             // Commented out as I wasn't really sure if i got the point of the requirement for this method
             // even the other methods were done in different comprehensive way but have choosen this one at the end
 
             //if (EntryIsValid(stack_id))
             //    return BadRequest("Wrong entry");
- 
+
             //double result = 0;
 
             //if (DB.StackDB2.Count == 0)
@@ -234,6 +234,6 @@ namespace RPN.Controllers
             //    return Ok(DB.StackDB2);
             //}
 
-            }
+        }
     }
 }

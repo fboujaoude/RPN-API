@@ -7,8 +7,8 @@ namespace RPN.Models
 {
     public class StackModel
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public Stack<double> stack { get; set; }
+        public Stack<string> Operand { get; set; }
     }
 }
